@@ -17,8 +17,8 @@ If you are unable to use gRPC, you can also use our REST endpoints, though we re
 
 ## See also
 
-- Protocol Buffers: https://protobuf.dev/
-- gRPC: https://grpc.io/
+- Protocol Buffers: <https://protobuf.dev/>
+- gRPC: <https://grpc.io/>
 - gRPC Service Protocols: [aima-gateway-protocols-public](https://github.com/team-sigma-ai/dtp-aima-gw-protocols-public)
 
 ## Notes
@@ -34,7 +34,8 @@ These protocols adhere to the following standards:
 
 We use versioning for individual Messages within a namespace to ensure controlled updates and backward compatibility.
 
-### Guidelines:
+### Guidelines
+
 - The namespace includes the version, e.g., `ai.sigmafinancial.aima.shared.v1`.
 - Breaking changes to a messages results in a new version being created for only that message.
 - Server Endpoints may use multiple versions of a message simultaneously. For example:
@@ -48,11 +49,10 @@ Ensure that you have set your `protoc` search path to include the parent folder 
 
 Example if your folder structure is like the one below, set your search path to include `aima-gateway-protos`.
 
-```
+```text
 aima-gateway-protos
 |
 +---- dtp-aima-gw-protocols-shared
 |
 \---- dtp-aima-gw-protocols-public
 ```
-
