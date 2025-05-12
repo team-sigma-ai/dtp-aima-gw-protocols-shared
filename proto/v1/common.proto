@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package ai.sigmafinancial.aima.v1.common;
+
+message Empty {}
+
+message ReportResponse {
+    string response = 1;
+}
