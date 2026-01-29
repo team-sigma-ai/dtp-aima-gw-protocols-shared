@@ -2,11 +2,8 @@ syntax = "proto3";
 
 package ai.sigmafinancial.aima.v1.common;
 
-import "google/protobuf/struct.proto";
-
 message Empty {}
 
 message ReportResponse {
     string response = 1;
-    google.protobuf.Struct additional = 5;
 }
