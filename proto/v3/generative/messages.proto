@@ -46,6 +46,7 @@ message ViewWorkflowResponse {
 message Workflow {
     // The workflow's ID.
     string id = 1;
+
     // The workflow's human-readable name.
     string name = 2;
 
@@ -53,10 +54,24 @@ message Workflow {
     repeated FieldSchema parameters = 3;
 
     // The shape of InvokeWorkflowResponse.content for this workflow. Always
-    // an object at the top level. JSON Schema is derived from this at runtime;
-    // no separate response_schema string is stored.
+    // an object at the top level.
     ObjectSchema response = 4;
+
+    // Optional human-readable description (UI tooltips / docs).
+    string description = 5;
+
+    // The field the carries the primary content of the workflow.
+    // Unstable, consumers should not rely on the contents of this field.
+    repeated FieldAccessor internal_primary_field = 6;
 }
+
+message FieldAccessor {
+    oneof accessor {
+        string field_name = 1;
+        int32 field_index = 2;
+    }
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────
 // InvokeWorkflow
@@ -97,16 +112,16 @@ message TypeSpec {
 
 // A named member of an object — and the top-level form of an input parameter.
 message FieldSchema {
-    // JSON key / parameter name.
+    // Parameter name.
     string name = 1;
     // This field's type.
     TypeSpec type = 2;
-    // True => must be present (JSON Schema `required`). False => optional.
+    // True => must be present. False => optional.
     bool required = 3;
     // Default value. Unset => no default. Mainly meaningful for inputs.
-    FieldValue default = 4;
+    FieldValue default_value = 4;
     // Example value. Unset => no example.
-    FieldValue example = 5;
+    FieldValue example_value = 5;
     // Enum constraint. Empty => unconstrained.
     repeated FieldValue allowed_values = 6;
     // Optional human-readable description (UI tooltips / docs).
