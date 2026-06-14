@@ -7,9 +7,7 @@ package ai.sigmafinancial.aima.v3.generative.services;
 //
 // These request/response message types back the public v3 Generative service
 // (see dtp-aima-gw-protocols-public/proto/v3/generative/services.proto). They
-// live in `shared` so private/internal contracts can reuse the exact same
-// shapes and wrap them with additional fields that are not exposed via the
-// customer-facing API.
+// live in `shared` so they can be reused across multiple service versions.
 //
 // v3 makes both halves of a workflow self-describing:
 //   * ViewWorkflow returns, per workflow, the SCHEMA of its input parameters
@@ -183,6 +181,6 @@ message InvokeWorkflowResponse {
 message ReportMetadata {
     string report_id    = 1;
     string node_id      = 2;
-    int64  generated_at = 3;  // unix epoch
+    int64  generated_at = 3;  // unix epoch nanoseconds
     string generated_by = 4;
 }
