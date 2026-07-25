@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package ai.sigmafinancial.aima.v1.management.policy.services;
+
+// A single permission statement
+message Statement {
+    // The statement id
+    string id = 1;
+    // The policy this statement belongs to
+    string policy_id = 5;
+    // The SRN, e.g. srn:<account>:generative:invoke_workflow:<workflow_id>
+    string srn = 10;
+    // When the statement was created (unix seconds)
+    int64 created_at = 15;
+}
+
+// A named bundle of statements
+message Policy {
+    // The policy id
+    string id = 1;
+    // The account that owns the policy
+    string owner_id = 5;
+    // When the policy was created (unix seconds)
+    int64 created_at = 10;
+    // The statements that make up the policy
+    repeated Statement statements = 15;
+}
+
+message GrantProductResponse {
+    // The account's policy after the grant
+    Policy policy = 1;
+}

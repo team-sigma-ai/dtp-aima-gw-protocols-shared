@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package ai.sigmafinancial.aima.v1.management.key.services;
+
+import "dtp-aima-gw-protocols-shared/proto/v1/auth.proto";
+
+message CreateKeyResponse {
+    // The key that was created
+    ai.sigmafinancial.aima.v1.auth.AppKey key = 1;
+}
