@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package ai.sigmafinancial.aima.common;
+
+// An empty message, for RPCs that take or return no fields. Version-neutral and
+// shared across all API versions.
+message Empty {}
