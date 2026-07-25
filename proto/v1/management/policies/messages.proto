@@ -8,7 +8,7 @@ message Statement {
     string id = 1;
     // The policy this statement belongs to
     string policy_id = 5;
-    // The SRN, e.g. srn:<account>:generative:invoke_workflow:<workflow_id>
+    // The SRN, e.g. srn:<account>:generative:InvokeWorkflow:<workflow_id>
     string srn = 10;
     // When the statement was created (unix seconds)
     int64 created_at = 15;
@@ -26,7 +26,7 @@ message Policy {
     repeated Statement statements = 15;
 }
 
-message GrantProductResponse {
-    // The account's policy after the grant
+message UpdateAccountBoundaryPolicyResponse {
+    // The account's boundary policy (ABP) after the update
     Policy policy = 1;
 }
