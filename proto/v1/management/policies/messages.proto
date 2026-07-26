@@ -12,6 +12,9 @@ message Statement {
     string srn = 10;
     // When the statement was created (unix seconds)
     int64 created_at = 15;
+    // Deny rather than allow. Default false = allow; a matching deny overrides any
+    // allow in either layer (deny-wins).
+    bool deny = 20;
 }
 
 // A named bundle of statements
