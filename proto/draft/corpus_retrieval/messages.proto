@@ -13,8 +13,7 @@ message Source {
     int32  source_id = 1;          // stable integer key, 1-based; referenced by Claim.source_ids
 
     // The source vendor's native, version-qualified document identifier. Opaque,
-    // so it stays agnostic to the vendor — it already pins the exact version
-    // "esma70-156-4572-...-pdf/2021-09-29" (the "/" separator is provisional).
+    // so it stays agnostic to the vendor — it already pins the exact version.
     string vendor_document_id = 2;
 
     string rel_path = 3;           // relative path within the corpus
