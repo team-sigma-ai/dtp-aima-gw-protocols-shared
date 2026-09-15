@@ -37,6 +37,7 @@ message Claim {
     repeated int32 source_ids = 3;      // -> Source.source_id (the sources this claim cites)
     int32 support_source_id = 4;        // -> Source.source_id; 0 means no support source applies
     AttributionResult attribution = 5;
+    repeated RawAttributionResult raw_attribution = 6;  // raw scoring output behind `attribution`; empty when none was produced
 }
 
 // UTF-16 code-unit offsets of a claim's text within Attribution.answer
@@ -46,7 +47,7 @@ message ClaimSpan {
     int32 end_utf16 = 2;
 }
 
-// The NLI (or LLM) attribution verdict for one claim.
+// The evaluation verdict for one claim.
 message AttributionResult {
     AttributionLabel label = 1;
     float confidence = 2;          // 0..1; 0 when unscored
@@ -57,6 +58,18 @@ message AttributionResult {
         ATTRIBUTION_LABEL_SUPPORTED_BY_OTHER = 2; // read-but-uncited evidence entails it (NLI only)
         ATTRIBUTION_LABEL_UNSUPPORTED = 3;        // no evidence entails the claim (fabrication risk)
         ATTRIBUTION_LABEL_CONTRADICTED = 4;       // evidence actively contradicts the claim (NLI only)
+    }
+}
+
+// One raw scoring output backing a claim's attribution verdict.
+message RawAttributionResult {
+    string text = 1;    // field label, e.g. "confidence" or "attribution score"
+
+    oneof value {
+        int32 int32_value = 2;
+        int64 int64_value = 3;
+        double double_value = 4;
+        string string_value = 5;
     }
 }
 
