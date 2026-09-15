@@ -41,9 +41,9 @@ message Attribution {
 // One atomic claim extracted from the answer.
 message Claim {
     string text = 1;
-    optional ClaimSpan span = 2;        // ABSENT when the claim text could not be located; consumers text-match
+    ClaimSpan span = 2;                 // ABSENT when the claim text could not be located; consumers text-match
     repeated int32 source_ids = 3;      // -> Source.source_id (the sources this claim cites)
-    optional int32 support_source_id = 4; // the source that drove the verdict, when applicable
+    int32 support_source_id = 4;        // -> Source.source_id; 0 means no support source applies
     AttributionResult attribution = 5;
 }
 
@@ -144,8 +144,8 @@ message TextDelta {
 message CompactHistoryRequest {
     repeated Message messages = 1;
 
-    // Most-recent messages to preserve verbatim. Unset or 0 -> server default.
-    optional int32 keep_recent_messages = 2;
+    // Most-recent messages to preserve verbatim. 0 -> server default.
+    int32 keep_recent_messages = 2;
 }
 
 // Result of CompactHistory: a shorter history, directly usable as the
