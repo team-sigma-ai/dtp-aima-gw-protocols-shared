@@ -14,18 +14,11 @@ message Source {
 
     // The source vendor's native, version-qualified document identifier. Opaque,
     // so it stays agnostic to the vendor — it already pins the exact version
-    // retrieved; consumers parse any date / qualifier out of it themselves.
-    // Typically a document slug joined with its version date, e.g.
     // "esma70-156-4572-...-pdf/2021-09-29" (the "/" separator is provisional).
     string vendor_document_id = 2;
 
     string rel_path = 3;           // relative path within the corpus
     string quote = 4;              // verbatim excerpt supporting the claim(s)
-
-    // Gateway-verified that `quote` occurs in the cited source version. The
-    // gateway resolves the corpus file from rel_path internally; consumers
-    // deep-link through the corpus API using rel_path.
-    bool   quote_verified = 5;
 }
 
 // The trailing attribution event. Carries the per-claim NLI verdicts computed
