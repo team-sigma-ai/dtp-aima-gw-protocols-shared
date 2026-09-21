@@ -18,6 +18,25 @@ message Source {
 
     string rel_path = 3;           // relative path within the corpus
     string quote = 4;              // verbatim excerpt supporting the claim(s)
+
+    // Where `quote` sits in the source document. ABSENT when the document has
+    // no addressable body (stored by reference only) or the citation carries
+    // no recorded range.
+    SourceSpan span = 5;
+}
+
+// Offsets of a cited excerpt within the source document exactly as supplied,
+// before any normalisation. Half-open: [start, end). Byte offsets index the
+// raw bytes; UTF-16 offsets index the same document in code units (as
+// ClaimSpan does for Attribution.answer).
+//
+// The span CONTAINS the cited text; it is not equal to `quote`, which is
+// whitespace-collapsed for display. Expect markup inside the span.
+message SourceSpan {
+    int32 start_byte = 1;
+    int32 end_byte = 2;
+    int32 start_utf16 = 3;
+    int32 end_utf16 = 4;
 }
 
 // The trailing attribution event. Carries the per-claim NLI verdicts computed
