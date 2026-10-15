@@ -2,8 +2,24 @@ syntax = "proto3";
 
 package ai.sigmafinancial.aima.v1.common;
 
+// An empty message
 message Empty {}
 
+// A generated report
 message ReportResponse {
+    // The report text
     string response = 1;
+}
+
+// Whether a request is a dry run
+enum DryRun {
+    DRY_RUN_YES = 0;
+    DRY_RUN_NO = 1;
+}
+
+// The direction a list is paged in
+enum ListOrder {
+    LIST_ORDER_UNSPECIFIED = 0;
+    LIST_ORDER_ASCENDING = 1;
+    LIST_ORDER_DESCENDING = 2;
 }

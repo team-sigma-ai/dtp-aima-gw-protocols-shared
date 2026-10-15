@@ -8,12 +8,11 @@ message Statement {
     string id = 1;
     // The policy this statement belongs to
     string policy_id = 5;
-    // The SRN, e.g. srn:<account>:generative:InvokeWorkflow:<workflow_id>
+    // The SRN the statement applies to
     string srn = 10;
-    // When the statement was created (unix seconds)
+    // When the statement was created, in Unix epoch seconds
     int64 created_at = 15;
-    // Deny rather than allow. Default false = allow; a matching deny overrides any
-    // allow in either layer (deny-wins).
+    // Whether the statement denies rather than allows
     bool deny = 20;
 }
 
@@ -23,13 +22,14 @@ message Policy {
     string id = 1;
     // The account that owns the policy
     string owner_id = 5;
-    // When the policy was created (unix seconds)
+    // When the policy was created, in Unix epoch seconds
     int64 created_at = 10;
     // The statements that make up the policy
     repeated Statement statements = 15;
 }
 
+// The account boundary policy after the update
 message UpdateAccountBoundaryPolicyResponse {
-    // The account's boundary policy (ABP) after the update
+    // The account's boundary policy
     Policy policy = 1;
 }

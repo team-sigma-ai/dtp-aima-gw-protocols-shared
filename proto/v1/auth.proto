@@ -2,20 +2,18 @@ syntax = "proto3";
 
 package ai.sigmafinancial.aima.v1.auth;
 
+// An app key
 message AppKey {
-    // The App Key ID
+    // The app key id
     string id = 1;
-    // The account this key pertains to
+    // The account the key belongs to
     string account_id = 3;
-    // The private part, this field is only returned on creation of a key.
+    // The private part of the key pair
     string secret = 5;
     // The public part of the key pair
     string public = 10;
-    // When the keypair was issued
+    // When the key pair was issued, in Unix epoch seconds
     int64 created = 15;
-    // The scopes the keypair can issue tokens for.
-    //
-    // Deprecated: an AppKey's authority now derives from the policy bound to it,
-    // surfaced via v2 token issuance.
+    // The scopes the key pair can issue tokens for, deprecated
     repeated int32 scope = 30;
 }

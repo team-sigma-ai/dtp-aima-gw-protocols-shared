@@ -1,0 +1,467 @@
+syntax = "proto3";
+
+package ai.sigmafinancial.aima.v1.generative.workflow_configuration;
+
+import "dtp-aima-gw-protocols-shared/proto/v3/generative/messages.proto";
+import "dtp-aima-gw-protocols-shared/proto/v1/common.proto";
+
+// Whether a configuration's output is sensitive
+enum Sensitivity {
+    SENSITIVITY_UNSPECIFIED   = 0;
+    SENSITIVITY_NOT_SENSITIVE = 1;
+    SENSITIVITY_SENSITIVE     = 2;
+}
+
+// Whether a configuration is active or deleted
+enum ConfigurationStatus {
+    CONFIGURATION_STATUS_UNSPECIFIED = 0;
+    CONFIGURATION_STATUS_ACTIVE      = 1;
+    CONFIGURATION_STATUS_DELETED     = 2;
+}
+
+// The progress of an expedited operation
+enum ExpeditedOperationStatus {
+    EXPEDITED_OPERATION_STATUS_UNSPECIFIED = 0;
+    EXPEDITED_OPERATION_STATUS_QUEUED      = 1;
+    EXPEDITED_OPERATION_STATUS_IN_PROGRESS = 2;
+    EXPEDITED_OPERATION_STATUS_COMPLETED   = 3;
+    EXPEDITED_OPERATION_STATUS_FAILED      = 4;
+}
+
+// How a browser is told to treat a configuration's PDF output
+enum PdfDisposition {
+    PDF_DISPOSITION_UNSPECIFIED = 0;
+    PDF_DISPOSITION_ATTACHMENT  = 1;
+    PDF_DISPOSITION_INLINE      = 2;
+}
+
+// The sites permitted to frame a configuration's output
+message FrameAncestors {
+    // A CSP frame-ancestors source expression
+    repeated string entry = 1;
+}
+
+// A workflow configuration and its current revision
+message Configuration {
+    // The configuration id
+    string id = 1;
+    // The account that owns the configuration
+    string account_id = 2;
+    // The workflow the configuration invokes
+    string workflow_id = 3;
+    // The sensitivity classification
+    Sensitivity sensitive = 4;
+    // Whether the configuration is active or deleted
+    ConfigurationStatus status = 5;
+    // When the configuration was created, in Unix epoch seconds
+    int64 created_at = 6;
+    // The revision the next invocation will run under
+    uint32 current_revision = 7;
+    // The invocation the pointer URL currently resolves to
+    string current_invocation_id = 8;
+    // The stable URL for the configuration's current output
+    string pointer_url = 9;
+    // The current revision
+    ConfigurationRevision revision = 10;
+}
+
+// A configuration revision
+message ConfigurationRevision {
+    // The configuration this revision belongs to
+    string configuration_id = 1;
+    // The revision number
+    uint32 revision = 2;
+    // The customer's name for the configuration
+    string name = 3;
+    // The app key the configuration's links are signed under
+    string nominated_key_id = 4;
+    // The parameters the workflow is invoked with
+    ai.sigmafinancial.aima.v3.generative.services.ObjectValue parameters = 5;
+    // When the revision was created, in Unix epoch seconds
+    int64 created_at = 7;
+    // The user that created the revision
+    string created_by = 8;
+    // The sites permitted to frame the configuration's output
+    FrameAncestors frame_ancestors = 9;
+    // How a PDF output is served
+    PdfDisposition pdf_disposition = 10;
+
+    reserved 6;
+}
+
+// A configuration revision without its parameter values
+message ConfigurationRevisionSummary {
+    // The configuration this revision belongs to
+    string configuration_id = 1;
+    // The revision number
+    uint32 revision = 2;
+    // When the revision was created, in Unix epoch seconds
+    int64 created_at = 3;
+    // The user that created the revision
+    string created_by = 4;
+    // The fields this revision changed
+    repeated string changed_fields = 5;
+}
+
+// One invocation's output
+message OutputVersion {
+    // The invocation that produced the output
+    string invocation_id = 1;
+    // The revision the invocation ran under
+    uint32 revision = 2;
+    // When the invocation ran, in Unix epoch seconds
+    int64 created_at = 3;
+    // The permanent URL for this output
+    string version_url = 4;
+    // The output's media type
+    string content_type = 5;
+    // The output's size in bytes
+    uint64 size_bytes = 6;
+    // When the output becomes due for deletion, in Unix epoch seconds
+    int64 retain_until = 7;
+}
+
+// A customer-created link with its own expiry
+message ExpiringLink {
+    // The link id
+    string link_id = 1;
+    // The URL to hand out
+    string url = 2;
+    // When the link stops resolving, in Unix epoch seconds
+    int64 expires_at = 3;
+    // The app key the link is signed under
+    string key_id = 4;
+    // The invocation the link resolves to
+    string invocation_id = 5;
+}
+
+// What an operation will cost and what it will affect
+message OperationDetails {
+    // The content groups the operation submits
+    uint32 content_groups = 1;
+    // The number of configurations in scope
+    uint32 configuration_count = 2;
+    // The number of output versions that stop resolving
+    uint64 version_count = 3;
+    // The stored bytes in scope
+    uint64 stored_bytes = 4;
+    // When storage stops being billed, in Unix epoch seconds
+    int64 storage_billed_until = 5;
+    // The fee, in GBP
+    string fee = 6;
+    // The number of expiring links in scope
+    uint64 affected_expiring_links = 7;
+}
+
+// The outcome of an operation that can be costed before it is applied
+message OperationOutcome {
+    // The dry run flag from the request
+    ai.sigmafinancial.aima.v1.common.DryRun dry_run = 1;
+    // The forecast or accepted scope of the operation
+    OperationDetails details = 2;
+    // The expedited operation the request started
+    ExpeditedOperation operation = 3;
+}
+
+// An expedited operation
+message ExpeditedOperation {
+    // The job id to poll
+    string job_id = 1;
+    // The operation's progress
+    ExpeditedOperationStatus status = 2;
+    // When the operation was submitted, in Unix epoch seconds
+    int64 submitted_at = 3;
+    // When the operation completed, in Unix epoch seconds
+    int64 completed_at = 4;
+    // The content groups submitted
+    uint32 content_groups = 5;
+}
+
+// A request to create a workflow configuration
+message CreateConfigurationRequest {
+    // The workflow to configure
+    string workflow_id = 1;
+    // The sensitivity classification
+    Sensitivity sensitive = 2;
+    // The customer's name for the configuration
+    string name = 3;
+    // The app key the configuration's links are signed under
+    string nominated_key_id = 4;
+    // The parameters the workflow is invoked with
+    ai.sigmafinancial.aima.v3.generative.services.ObjectValue parameters = 5;
+    // How long to retain the workflow's output, in days
+    optional uint32 retention_period_days = 6;
+    // The configuration to copy from
+    string copy_from_configuration_id = 7;
+    // The account to own the configuration
+    string account_id = 8;
+    // The sites permitted to frame the configuration's output
+    FrameAncestors frame_ancestors = 9;
+    // How a PDF output is served
+    PdfDisposition pdf_disposition = 10;
+}
+
+// The created configuration
+message CreateConfigurationResponse {
+    // The created configuration
+    Configuration configuration = 1;
+}
+
+// A request for a page of configurations
+message ListConfigurationsRequest {
+    // The configuration ids to filter by
+    repeated string id = 1;
+    // The workflow to filter by
+    string workflow_id = 2;
+    // Whether to include deleted configurations
+    bool include_deleted = 3;
+    // The configuration id to page on from
+    string after_id = 4;
+    // The largest number of configurations to return
+    uint32 limit = 5;
+    // The direction to page in
+    ai.sigmafinancial.aima.v1.common.ListOrder order = 6;
+}
+
+// A page of configurations
+message ListConfigurationsResponse {
+    // The configurations on this page
+    repeated Configuration configurations = 1;
+    // The id of the last configuration returned, for the next request
+    string last_id = 2;
+}
+
+// A request for a configuration
+message GetConfigurationRequest {
+    // The configuration to get
+    string configuration_id = 1;
+}
+
+// The requested configuration
+message GetConfigurationResponse {
+    // The configuration
+    Configuration configuration = 1;
+}
+
+// A request for a page of a configuration's revisions
+message ListConfigurationRevisionsRequest {
+    // The configuration whose revisions to list
+    string configuration_id = 1;
+    // The revision number to page on from
+    uint32 after_revision = 2;
+    // The largest number of revisions to return
+    uint32 limit = 3;
+    // The direction to page in
+    ai.sigmafinancial.aima.v1.common.ListOrder order = 4;
+}
+
+// A page of revision summaries
+message ListConfigurationRevisionsResponse {
+    // The revisions on this page
+    repeated ConfigurationRevisionSummary revisions = 1;
+    // The number of the last revision returned, for the next request
+    uint32 last_revision = 2;
+}
+
+// A request for one revision of a configuration
+message GetConfigurationRevisionRequest {
+    // The configuration the revision belongs to
+    string configuration_id = 1;
+    // The revision number to get
+    uint32 revision = 2;
+}
+
+// The requested revision
+message GetConfigurationRevisionResponse {
+    // The revision
+    ConfigurationRevision revision = 1;
+}
+
+// A request to append a revision to a configuration
+message ReviseConfigurationRequest {
+    // The configuration to revise
+    string configuration_id = 1;
+    // The customer's new name for the configuration
+    optional string name = 2;
+    // The new app key the configuration's links are signed under
+    optional string nominated_key_id = 3;
+    // The new parameters the workflow is invoked with
+    ai.sigmafinancial.aima.v3.generative.services.ObjectValue parameters = 4;
+    // How long to retain the workflow's output, in days
+    optional uint32 retention_period_days = 5;
+    // The sensitivity classification
+    Sensitivity sensitive = 6;
+    // The new sites permitted to frame the configuration's output
+    FrameAncestors frame_ancestors = 7;
+    // How a PDF output is served
+    PdfDisposition pdf_disposition = 8;
+}
+
+// The configuration and its new revision
+message ReviseConfigurationResponse {
+    // The revised configuration
+    Configuration configuration = 1;
+    // The new revision
+    ConfigurationRevision revision = 2;
+}
+
+// A request to disable or enable a configuration
+message ToggleConfigurationStatusRequest {
+    // The configuration to disable or enable
+    string configuration_id = 1;
+    // The status to move to
+    ConfigurationStatus status = 2;
+    // Whether to return the estimate without applying the change
+    ai.sigmafinancial.aima.v1.common.DryRun dry_run = 3;
+    // Whether to purge cached copies of the output on disable
+    bool expedited = 4;
+}
+
+// The outcome of a status change
+message ToggleConfigurationStatusResponse {
+    // The configuration as it now stands
+    Configuration configuration = 1;
+    // The cost and scope of the change
+    OperationOutcome outcome = 2;
+}
+
+// A request to destroy a configuration's stored output
+message PurgeConfigurationRequest {
+    // The configuration whose output to destroy
+    string configuration_id = 1;
+    // Whether to return the estimate without destroying anything
+    ai.sigmafinancial.aima.v1.common.DryRun dry_run = 2;
+    // Whether to purge cached copies of the output
+    bool expedited = 3;
+    // The configuration id repeated, to confirm the purge
+    string confirm_configuration_id = 4;
+}
+
+// The outcome of a purge request
+message PurgeConfigurationResponse {
+    // The cost and scope of the purge
+    OperationOutcome outcome = 1;
+    // The purge id
+    string audit_record_id = 2;
+    // The accepted purge
+    PurgeOperation purge = 3;
+}
+
+// The progress of an accepted purge
+enum PurgeOperationStatus {
+    PURGE_OPERATION_STATUS_UNSPECIFIED = 0;
+    PURGE_OPERATION_STATUS_PENDING     = 1;
+    PURGE_OPERATION_STATUS_COMPLETED   = 2;
+}
+
+// An accepted purge
+message PurgeOperation {
+    // The purge id
+    string purge_id = 1;
+    // The purge's progress
+    PurgeOperationStatus status = 2;
+    // When the purge was accepted, in Unix epoch seconds
+    int64 accepted_at = 3;
+    // When the purge completed, in Unix epoch seconds
+    int64 completed_at = 4;
+    // The number of output versions the purge destroys
+    uint64 version_count = 5;
+}
+
+// A request for a purge's progress
+message GetPurgeOperationRequest {
+    // The purge to poll
+    string purge_id = 1;
+}
+
+// The purge as it now stands
+message GetPurgeOperationResponse {
+    // The purge
+    PurgeOperation operation = 1;
+}
+
+// A request for a page of a configuration's output versions
+message ListOutputVersionsRequest {
+    // The configuration whose output versions to list
+    string configuration_id = 1;
+    // The earliest invocation time to include, in Unix epoch seconds
+    int64 created_after = 2;
+    // The latest invocation time to include, in Unix epoch seconds
+    int64 created_before = 3;
+    // The invocation id to page on from
+    string after_id = 4;
+    // The largest number of versions to return
+    uint32 limit = 5;
+    // The direction to page in
+    ai.sigmafinancial.aima.v1.common.ListOrder order = 6;
+}
+
+// A page of output versions
+message ListOutputVersionsResponse {
+    // The output versions on this page
+    repeated OutputVersion versions = 1;
+    // The invocation id of the last version returned, for the next request
+    string last_id = 2;
+}
+
+// A request to create an expiring link
+message CreateExpiringLinkRequest {
+    // The configuration to link to
+    string configuration_id = 1;
+    // The invocation to link to
+    string invocation_id = 2;
+    // When the link stops resolving, in Unix epoch seconds
+    int64 expires_at = 3;
+    // The app key to sign the link with
+    string key_id = 4;
+}
+
+// The created expiring link
+message CreateExpiringLinkResponse {
+    // The created link
+    ExpiringLink link = 1;
+}
+
+// A request for an expedited operation's progress
+message GetExpeditedOperationRequest {
+    // The job to poll
+    string job_id = 1;
+}
+
+// The expedited operation as it now stands
+message GetExpeditedOperationResponse {
+    // The expedited operation
+    ExpeditedOperation operation = 1;
+}
+
+// A request for a page of expiring links
+message ListExpiringLinksRequest {
+    // The configuration to filter by
+    string configuration_id = 1;
+    // The invocation to filter by
+    string invocation_id = 2;
+    // The link id to page on from
+    string after_id = 3;
+    // The largest number of links to return
+    uint32 limit = 4;
+    // The direction to page in
+    ai.sigmafinancial.aima.v1.common.ListOrder order = 5;
+    // The window ahead of now to list expiring links from
+    int64 expires_within_seconds = 6;
+    // Whether to list links whatever their expiry
+    bool any_expiry = 7;
+}
+
+// A page of expiring links
+message ListExpiringLinksResponse {
+    // The links on this page
+    repeated ExpiringLink links = 1;
+    // The id of the last link returned, for the next request
+    string last_id = 2;
+}
+
+// A request to delete expiring links
+message DeleteExpiringLinkRequest {
+    // The links to delete
+    repeated string link_id = 1;
+}
