@@ -2,15 +2,24 @@ syntax = "proto3";
 
 package ai.sigmafinancial.aima.v1.user;
 
+// A request to create an account
 message NewAccount {
+    // The account name
     string name = 5;
+    // The parent account id
     string parent_id = 15;
 }
 
+// An account
 message Account {
+    // The account id
     string id = 1;
+    // The account name
     string name = 5;
+    // Whether the account is active
     bool active = 10;
+    // The parent account id
     string parent_id = 15;
+    // When the account was created, in Unix epoch seconds
     int64 created = 25;
 }

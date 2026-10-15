@@ -4,7 +4,22 @@ package ai.sigmafinancial.aima.v1.management.key.services;
 
 import "dtp-aima-gw-protocols-shared/proto/v1/auth.proto";
 
+// The key that was created
 message CreateKeyResponse {
-    // The key that was created
+    // The created key
     ai.sigmafinancial.aima.v1.auth.AppKey key = 1;
+}
+
+// A resource that depends on an app key
+message BoundResource {
+    // The service that owns the resource
+    string service = 1;
+    // The resource's type within that service
+    string resource_type = 5;
+    // The resource id
+    string resource_id = 10;
+    // The customer's name for the resource
+    string display_name = 15;
+    // When the binding was registered, in Unix epoch seconds
+    int64 registered_at = 20;
 }

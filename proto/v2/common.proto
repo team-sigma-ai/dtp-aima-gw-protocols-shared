@@ -4,7 +4,10 @@ package ai.sigmafinancial.aima.v2.common;
 
 import "google/protobuf/struct.proto";
 
+// A generated report
 message ReportResponse {
+    // The report text
     string report = 1;
+    // Additional structured data returned with the report
     google.protobuf.Struct additional = 5;
 }
