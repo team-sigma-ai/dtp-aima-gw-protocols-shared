@@ -347,11 +347,12 @@ message PurgeConfigurationResponse {
     PurgeOperation purge = 3;
 }
 
-// The progress of an accepted purge
+// The progress of an accepted purge, where a failed purge can still go on to complete
 enum PurgeOperationStatus {
     PURGE_OPERATION_STATUS_UNSPECIFIED = 0;
     PURGE_OPERATION_STATUS_PENDING     = 1;
     PURGE_OPERATION_STATUS_COMPLETED   = 2;
+    PURGE_OPERATION_STATUS_FAILED      = 3;
 }
 
 // An accepted purge
