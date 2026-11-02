@@ -182,15 +182,21 @@ message ToolResult {
     string result_json = 2;
 }
 
-// Incremental reasoning text
+// Incremental reasoning text. This is working text, not the answer: it may
+// resemble the answer and may differ from it. Take the answer from `answer`
+// frames or TurnResult.content.
 message ReasoningDelta {
     // The next piece of reasoning text
     string content = 1;
 }
 
-// Incremental answer text
+// Answer text. The answer is validated before it is released, so the text
+// arrives only once validation has finished, and today each turn carries one
+// TextDelta holding the whole answer. Use `reasoning`, `plan` and `step` frames
+// to show progress while a turn runs. Append `content` in arrival order rather
+// than assuming a single delta.
 message TextDelta {
-    // The next piece of answer text
+    // The next piece of answer text; today, the whole answer
     string content = 1;
 }
 
@@ -228,7 +234,14 @@ message CreateTurnRequest {
     string context_id = 4;
 }
 
-// One streamed turn event
+// One streamed turn event. A call receives `ack` first, then zero or more
+// `frame`s, then exactly one `result` or `error`, then the stream closes.
+// Read until `result` or `error`: attribution arrives on `result`, after the
+// answer frame.
+//
+// Re-attaching to a running turn delivers its earlier frames immediately, then
+// continues live. Re-attaching to a finished turn, or receiving a reused
+// answer, delivers everything immediately.
 message TurnEvent {
     oneof event {
         // The turn was scheduled or re-attached
@@ -270,7 +283,7 @@ message TurnFrame {
         ToolResult tool_result = 6;
         // Incremental reasoning text
         ReasoningDelta reasoning = 7;
-        // Incremental answer text
+        // Answer text; today, one frame holding the whole answer
         TextDelta answer = 8;
     }
 }
@@ -296,7 +309,8 @@ message TurnResult {
     string content = 1;
     // The sources the answer cites
     repeated Source sources = 2;
-    // The answer's attribution verdicts
+    // The answer's attribution verdicts. Absent when attribution was not
+    // computed or did not finish in time; the answer still stands, unscored.
     Attribution attribution = 3;
     // The corpus generation the turn was served from
     string corpus_generation = 4;
